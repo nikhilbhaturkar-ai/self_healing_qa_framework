@@ -1,0 +1,9 @@
+Scenario 1: Verify Wikipedia search shows the Google Pixel smartphone article
+- Navigate to en.wikipedia.org
+- Enter search text "Google Pixel" and click on search
+- Search result should show Google Pixel smartphone details
+
+Scenario 2: Verify Wikipedia search shows the Motorola company article
+- Navigate to en.wikipedia.org
+- Enter search text "Motorola" and click on search
+- Search result should show Motorola telecommunications company details

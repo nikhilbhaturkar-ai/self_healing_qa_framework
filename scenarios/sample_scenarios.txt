@@ -1,0 +1,9 @@
+Scenario 1: Verify the google search showing correct top 5 google pixel phones
+- Navigate to google.co.in
+- Enter search text "top 5 google pixel phone" and click on search
+- Search result should show top 5 google pixel phones in popular products section
+
+Scenario 2: Verify the google search showing correct top 5 moto phones
+- Navigate to google.co.in
+- Enter search text "top 5 motorola phone" and click on search
+- Search result should show top 5 motorola phones in popular products section
