@@ -41,6 +41,7 @@ class Settings:
     reports_dir: str
     locator_history_file: str
     action_timeout_ms: int
+    app_ready_selector: str | None
 
     @property
     def chroma_path(self) -> Path:
@@ -66,7 +67,8 @@ def load_settings() -> Settings:
         chroma_dir=os.getenv("CHROMA_DIR", "chroma_db"),
         reports_dir=os.getenv("REPORTS_DIR", "reports"),
         locator_history_file=os.getenv("LOCATOR_HISTORY_FILE", "locator_history.json"),
-        action_timeout_ms=_int("ACTION_TIMEOUT_MS", 5000),
+        action_timeout_ms=_int("ACTION_TIMEOUT_MS", 15000),
+        app_ready_selector=os.getenv("APP_READY_SELECTOR") or None,
     )
 
 

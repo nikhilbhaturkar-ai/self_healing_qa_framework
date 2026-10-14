@@ -1,9 +1,32 @@
-Scenario 1: Verify the google search showing correct top 5 google pixel phones
-- Navigate to google.co.in
-- Enter search text "top 5 google pixel phone" and click on search
-- Search result should show top 5 google pixel phones in popular products section
+Scenario 1: Verify the succesful login with administrator in APX OPS Tool
+- Navigate to http://apxtechnology.in:3000/
+- Enter userId as admin
+- Enter password as password123
+- Click on "Sign in to Dashboard" button
+- Verify if the heading "ApxOps - SAP Monitoring Platform" is visible
+- click on SAP Basic Admin 
+- click on Sign Out
 
-Scenario 2: Verify the google search showing correct top 5 moto phones
-- Navigate to google.co.in
-- Enter search text "top 5 motorola phone" and click on search
-- Search result should show top 5 motorola phones in popular products section
+Scenario 2: Verify the sections,buttons with administrator in APX OPS Tool
+- Navigate to http://apxtechnology.in:3000/
+- Enter userId as admin
+- Enter password as password123
+- Click on "Sign in to Dashboard" button
+- Verify if text SAP Basis Admin is displayed on right side of screen
+- Verify if label PRIORITY FILTER,VIEW DATE,LATEST RUN are diplayed on screen 
+- Verify if Basis Monitoring,System Monitoring,IDoc Monitoring,History,Reporting buttons are displayed on screen
+- Click on SAP Basic Admin 
+- Click on Sign Out
+
+Scenario 3: Verify the sections,buttons with administrator in APX OPS Tool
+- Navigate to http://apxtechnology.in:3000/
+- Enter userId as admin
+- Enter password as password123
+- Click on "Sign in to Dashboard" button
+- Verify if tiles "DBA Cockpit - Data Volume", "DBA Cockpit - Log Volume", "Free Memory App Server", "Free Memory - Database" are displaying.
+- Verify if tiles "STRUST - SSL Certificates Expired", "STRUST - SSL Certificates Expired Today", "STRUST - SSL Certificates Expiring in 15 Days" are displaying.
+- Verify if tiles "Backup", "SM13 - Update Requests", "SM12 - Lock Entries", "SM51 - Application Servers", "SM50 - Work Process List" are displaying.
+- Verify if tiles "ST06 - OS Monitoring", "SM37 - Background Jobs", "SMQ1 - Outbound Queues", "SMQ2 - Inbound Queues" are displaying.
+- Verify if tiles "SM20 - Security Audit Log", "SM21 - System Log", "SM58 - Transactional RFC", "Cancelled Jobs", "ST22 - ABAP Runtime Errors" are displaying. 
+- Click on SAP Basic Admin 
+- Click on Sign Out

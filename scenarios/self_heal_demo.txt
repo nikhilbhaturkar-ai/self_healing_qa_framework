@@ -1,4 +1,0 @@
-Scenario 1: Verify self-healing recovers when the click target hint doesn't literally match the button label
-- Navigate to en.wikipedia.org
-- Enter search text "Google Pixel" and click on search icon
-- Search result should show Google Pixel smartphone details

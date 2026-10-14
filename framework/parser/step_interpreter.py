@@ -26,6 +26,14 @@ _ENTER_ONLY_RE = re.compile(
     r'^enter\s+"(?P<value>[^"]+)"(?:\s+(?:in|into)\s+(?P<field>.+))?$', re.IGNORECASE
 )
 _CLICK_RE = re.compile(r"^click\s+(?:on\s+)?(.+)$", re.IGNORECASE)
+_SCREENSHOT_RE = re.compile(
+    r"^(?:capture|take)\s+(?:a\s+)?(?:screenshot|screen\s*shot|screen\s*print)"
+    r"(?:\s+(?:for|of)\s+(?:the\s+)?screen)?[.!]?$",
+    re.IGNORECASE,
+)
+_VERIFY_DISPLAY_RE = re.compile(
+    r"^verify\s+if\s+(?P<content>.+?)\s+(?:is|are)\s+displaying\.?$", re.IGNORECASE
+)
 _ASSERT_RE = re.compile(
     r"^(?P<subject>.+?)\s+should\s+(?:show|display|contain)\s+(?P<content>.+)$", re.IGNORECASE
 )
@@ -102,6 +110,9 @@ def interpret_step(raw_text: str) -> Action:
             input_hint=(m.group("field") or "input").strip(),
         )
 
+    if _SCREENSHOT_RE.match(text):
+        return Action(type="screenshot", raw_text=raw_text)
+
     m = _ASSERT_RE.match(text)
     if m:
         content, section = _split_content_section(m.group("content"))
@@ -110,6 +121,14 @@ def interpret_step(raw_text: str) -> Action:
             raw_text=raw_text,
             content_hint=content,
             section_hint=section,
+        )
+
+    m = _VERIFY_DISPLAY_RE.match(text)
+    if m:
+        return Action(
+            type="assert_visible",
+            raw_text=raw_text,
+            content_hint=m.group("content").strip(),
         )
 
     m = _CLICK_RE.match(text)

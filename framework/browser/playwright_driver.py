@@ -6,6 +6,8 @@ request. All self-healing decision-making lives in framework/graph/nodes/.
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from playwright.async_api import async_playwright
 
 from framework.browser.dom_snapshot import capture_dom_snapshot
@@ -17,10 +19,17 @@ class ElementNotFound(Exception):
 
 
 class PlaywrightDriver:
-    def __init__(self, browser_name: str = "chromium", headless: bool = False, timeout_ms: int = 5000):
+    def __init__(
+        self,
+        browser_name: str = "chromium",
+        headless: bool = False,
+        timeout_ms: int = 15000,
+        app_ready_selector: str | None = None,
+    ):
         self.browser_name = browser_name
         self.headless = headless
         self.timeout_ms = timeout_ms
+        self.app_ready_selector = app_ready_selector
         self._pw = None
         self.browser = None
         self.context = None
@@ -33,6 +42,7 @@ class PlaywrightDriver:
         self.context = await self.browser.new_context()
         self.page = await self.context.new_page()
         self.page.set_default_timeout(self.timeout_ms)
+        self.page.set_default_navigation_timeout(self.timeout_ms)
 
     async def stop(self) -> None:
         if self.context:
@@ -44,6 +54,13 @@ class PlaywrightDriver:
 
     async def navigate(self, url: str) -> None:
         await self.page.goto(url, wait_until="domcontentloaded")
+        await self.wait_for_app_ready()
+
+    async def wait_for_app_ready(self) -> None:
+        if self.app_ready_selector:
+            await self.page.locator(self.app_ready_selector).wait_for(
+                state="visible", timeout=self.timeout_ms
+            )
 
     async def snapshot(self) -> list[dict]:
         return await capture_dom_snapshot(self.page)
@@ -70,12 +87,17 @@ class PlaywrightDriver:
                     return False
             else:
                 raise ValueError(f"Unknown op: {op}")
-            return True
         except Exception:
             return False
+
+        await self.wait_for_app_ready()
+        return True
 
     async def press_enter(self) -> None:
         await self.page.keyboard.press("Enter")
 
     async def screenshot_bytes(self) -> bytes:
         return await self.page.screenshot()
+
+    async def save_screenshot(self, path: Path) -> None:
+        await self.page.screenshot(path=str(path), full_page=True)
