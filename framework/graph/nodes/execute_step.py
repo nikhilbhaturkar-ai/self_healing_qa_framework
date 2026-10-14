@@ -26,11 +26,19 @@ def make_execute_step(ctx: NodeContext):
             )
             locator = await build_locator(ctx.driver.page, candidate)
             if locator is not None and await ctx.driver.act(locator, op, value):
-                return {"initial_success": True, "final_success": True}
+                return {
+                    "initial_success": True,
+                    "final_success": True,
+                    "locator_strategy": "chroma_cache",
+                }
 
         ok = await ctx.driver.resolve_and_act(kind, hint, op, value)
         if ok:
-            return {"initial_success": True, "final_success": True}
+            return {
+                "initial_success": True,
+                "final_success": True,
+                "locator_strategy": "playwright_semantic",
+            }
 
         return {
             "initial_success": False,

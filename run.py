@@ -1,7 +1,7 @@
 """CLI entrypoint.
 
 Usage:
-    python run.py scenarios/sample_scenarios.txt [--headless] [--browser chromium]
+    python run.py scenarios/apx_ops.feature [--headless] [--browser chromium]
 """
 from __future__ import annotations
 
@@ -23,8 +23,8 @@ logger = logging.getLogger("run")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Self-healing QA framework runner")
-    parser.add_argument("scenarios_file", help="Path to a plain-English scenarios .txt file")
+    parser = argparse.ArgumentParser(description="Self-healing Cucumber/Gherkin QA framework runner")
+    parser.add_argument("scenarios_file", help="Path to a Gherkin .feature file (legacy .txt is also supported)")
     parser.add_argument("--headless", action="store_true", help="Force headless browser")
     parser.add_argument("--headed", action="store_true", help="Force headed (visible) browser")
     parser.add_argument("--browser", default=None, choices=["chromium", "firefox", "webkit"])

@@ -1,7 +1,7 @@
 # Self-Healing QA Automation Framework
 
-LangGraph + Playwright + ChromaDB + Groq. Executes plain-English test
-scenarios as real browser actions and self-heals locators when the UI
+LangGraph + Playwright + ChromaDB + Groq. Executes Cucumber/Gherkin feature
+files as browser actions and self-heals locators when the UI
 changes underneath a test, using a deterministic-first pipeline so the
 Groq LLM is only called as a last resort.
 
@@ -43,37 +43,83 @@ copy .env.example .env
 # edit .env and set GROQ_API_KEY
 ```
 
-## Writing scenarios
+## Writing Features
 
-Plain English, in a `.txt` file (see `scenarios/sample_scenarios.txt`):
+Write scenarios in standard Gherkin `.feature` files (see
+`scenarios/apx_ops.feature`):
 
 ```
-Scenario 1: Verify the google search showing correct top 5 google pixel phones
-- Navigate to google.co.in
-- Enter search text "top 5 google pixel phone" and click on search
-- Search result should show top 5 google pixel phones in popular products section
+Feature: Search
+   Scenario: Find a page
+      Given I navigate to "https://en.wikipedia.org"
+      When I enter "Google Pixel" into "search"
+      And I click "Search"
+      Then I should see text "Google Pixel"
 ```
 
-Supported step patterns (rule-based, no LLM cost): `Navigate to <url>`,
-`Enter <field> text "<value>" and click on <target>`, `Enter "<value>" in
-<field>`, `Click on <target>`, `<subject> should show/display/contain
-<content> [in <section>]`. A step that matches none of these triggers a
-single small Groq call to classify it (logged in the report).
+Bound step expressions are `I navigate to "<url>"`, `I enter "<value>" into
+"<field>"`, `I click "<target>"` (or `I click on "<target>"`), `I should see
+button "<accessible name>"`, `I should see text "<text>"`, and `I take a
+screenshot` / `I capture a screenshot`. The button assertion checks the
+button's accessible name and actual visibility. Gherkin `Background` and `Scenario
+Outline` with `Examples` are supported. Unbound Gherkin steps fail explicitly;
+they are not sent to the LLM classifier. Existing `.txt` scenario files remain
+supported for backward compatibility.
 
-Note: the final "should show ... in <section>" assertion is a real,
-unmocked keyword-containment check against the live page's visible text -
-it is intentionally not locator-based (self-healing applies to element
-*locators* used for actions, per the architecture; content assertions on
-unpredictable pages like a Google SERP use fuzzy text matching instead).
+Use a one-column DataTable to check multiple complete visible texts:
+
+```
+Then I should see all listed texts
+   | text |
+   | Dashboard |
+   | Monitoring |
+```
+
+The header can be `text`, `expected text`, or `value`. Each row is checked as a
+separate exact-case expected phrase and appears in the report's matched/missing
+tables.
+
+## Scenario And Step Hooks
+
+Pass a `StepHooks` subclass when constructing the runner to execute custom
+logic around scenarios and steps. `before_scenario` and `after_scenario` run
+once per scenario; the after-hook receives the final scenario result.
+`before_step` and `after_step` run for each step; the after-hook receives the
+step result. After-hooks run when their matching before-hook or execution fails.
+
+```python
+from config import SETTINGS
+from framework.hooks import StepHooks
+from framework.runner import ScenarioRunner
+
+
+class AuditHooks(StepHooks):
+   async def before_scenario(self, scenario, driver):
+      print(f"Starting scenario: {scenario.title}")
+
+   async def after_scenario(self, scenario, result, driver):
+      print(f"Scenario finished with status: {result['status']}")
+
+   async def before_step(self, scenario, step, driver):
+      print(f"Starting {scenario.title}: {step.raw_text}")
+
+   async def after_step(self, scenario, step, result, driver):
+      print(f"Finished with status: {result['status']}")
+
+
+runner = ScenarioRunner(SETTINGS, hooks=AuditHooks())
+```
 
 ## Running
 
 ```powershell
-.venv\Scripts\python run.py scenarios/sample_scenarios.txt
+.venv\Scripts\python run.py scenarios/apx_ops.feature
 # add --headless for CI, --browser firefox|webkit to switch engines
 ```
 
 Reports are written to `reports/report_<timestamp>.{html,json}`.
+Each scenario runs in its own browser session; the browser is closed after its
+scenario hooks complete and relaunched before the next scenario begins.
 
 ## Token-minimization strategy
 

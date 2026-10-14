@@ -56,6 +56,29 @@ def _execution_detail_html(detail: object) -> str:
   return _value_table([("Result", detail)])
 
 
+def _locator_strategies_html(strategies: list[dict]) -> str:
+    if not strategies:
+        return ""
+    rows = []
+    for strategy in strategies:
+        rows.append(
+            (
+                f"{strategy.get('kind', 'element').title()}: {strategy.get('hint', '')}",
+                "; ".join(
+                    str(value)
+                    for value in (
+                        strategy.get("selection_method"),
+                        strategy.get("strategy"),
+                        f"decision: {strategy['decision']}" if strategy.get("decision") else None,
+                        f"retry succeeded: {strategy['applied_success']}" if strategy.get("applied_success") is not None else None,
+                    )
+                    if value
+                ),
+            )
+        )
+    return f'<details class="value-section locator-strategies"><summary>Locator Strategy ({len(strategies)})</summary>{_value_table(rows)}</details>'
+
+
 def json_display(value: object) -> str:
   if isinstance(value, dict):
     return "; ".join(f"{key}: {item}" for key, item in value.items())
@@ -82,8 +105,14 @@ def _step_html(step: dict) -> str:
     status = step.get("status", "unknown")
     healing_events = step.get("healing_events", [])
     heals = "".join(_healing_event_html(event, index) for index, event in enumerate(healing_events, 1))
-    if not heals:
-        heals = '<p class="empty-state">No AI healing activity for this step.</p>'
+    healing_section = ""
+    if healing_events:
+      healing_section = f"""
+      <details class="report-section healing-section">
+        <summary>AI Healing ({len(healing_events)} event{'s' if len(healing_events) != 1 else ''})</summary>
+        {heals}
+      </details>
+      """
     return f"""
     <details class="step">
       <summary class="step-head">{_badge(status)} <span class="step-text">{_esc(step.get('text', ''))}</span></summary>
@@ -92,11 +121,9 @@ def _step_html(step: dict) -> str:
           <summary>Execution</summary>
           {_value_table([("Action type", step.get("action_type", "")), ("Status", status)])}
           {_execution_detail_html(step.get("detail"))}
+          {_locator_strategies_html(step.get("locator_strategies", []))}
         </details>
-        <details class="report-section healing-section">
-          <summary>AI Healing ({len(healing_events)} event{'s' if len(healing_events) != 1 else ''})</summary>
-          {heals}
-        </details>
+        {healing_section}
       </div>
     </details>
     """

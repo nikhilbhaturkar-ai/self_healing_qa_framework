@@ -6,6 +6,7 @@ No LLM involved anywhere in this module.
 from __future__ import annotations
 
 import difflib
+import json
 import re
 from dataclasses import dataclass, field
 from typing import Optional
@@ -92,8 +93,11 @@ _STRATEGY_STABILITY = {
     "id": 0.9,
     "name": 0.8,
     "role_text": 0.6,
+    "title_contains": 0.65,
+    "aria_label_contains": 0.65,
     "text": 0.45,
     "css_class": 0.3,
+    "class_contains": 0.3,
 }
 
 
@@ -101,7 +105,7 @@ def stability_weight(strategy: str) -> float:
     return _STRATEGY_STABILITY.get(strategy, 0.2)
 
 
-def _candidates_for_element(el: dict) -> list[Candidate]:
+def _candidates_for_element(el: dict, hint: str, kind: str) -> list[Candidate]:
     """An element can yield more than one candidate (attribute-based +
     role/text-based) so scoring can pick whichever is actually most robust."""
     tag = el.get("tag")
@@ -134,6 +138,27 @@ def _candidates_for_element(el: dict) -> list[Candidate]:
                 visible=el.get("visible", True), enabled=el.get("enabled", True), element=el,
             )
         )
+    if kind == "clickable" and hint:
+        contains_selector_value = json.dumps(hint, ensure_ascii=True)
+        for attribute, value, strategy in (
+            ("class", el.get("class_name"), "class_contains"),
+            ("title", el.get("title"), "title_contains"),
+            ("aria-label", el.get("aria_label"), "aria_label_contains"),
+        ):
+            if value and hint.casefold() in value.casefold():
+                candidates.append(
+                    Candidate(
+                        strategy=strategy,
+                        selector=f'{tag}[{attribute}*={contains_selector_value} i]',
+                        role=role,
+                        accessible_name=value,
+                        tag=tag,
+                        text=el.get("text"),
+                        visible=el.get("visible", True),
+                        enabled=el.get("enabled", True),
+                        element=el,
+                    )
+                )
     if role and name:
         candidates.append(
             Candidate(
@@ -193,7 +218,7 @@ def generate_candidates(snapshot: list[dict], kind: str, hint: str, top_k: int =
         name = _accessible_name(el)
         sim = difflib.SequenceMatcher(a=hint.lower(), b=name.lower()).ratio() if name else 0.0
         priority = (1.5 if _is_primary_for_kind(el, kind) else 0.0) + sim
-        for cand in _candidates_for_element(el):
+        for cand in _candidates_for_element(el, hint, kind):
             scored.append((priority, cand))
 
     scored.sort(key=lambda pair: pair[0], reverse=True)

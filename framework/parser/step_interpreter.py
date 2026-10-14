@@ -37,8 +37,15 @@ _VERIFY_DISPLAY_RE = re.compile(
 _ASSERT_RE = re.compile(
     r"^(?P<subject>.+?)\s+should\s+(?:show|display|contain)\s+(?P<content>.+)$", re.IGNORECASE
 )
+_GHERKIN_NAVIGATE_RE = re.compile(r'^I navigate to "(?P<url>[^"]+)"$', re.IGNORECASE)
+_GHERKIN_FILL_RE = re.compile(r'^I enter "(?P<value>[^"]+)" into "(?P<field>[^"]+)"$', re.IGNORECASE)
+_GHERKIN_CLICK_RE = re.compile(r'^I click(?:\s+on)?\s+"(?P<target>[^"]+)"$', re.IGNORECASE)
+_GHERKIN_BUTTON_VISIBLE_RE = re.compile(r'^I should see button "(?P<target>[^"]+)"$', re.IGNORECASE)
+_GHERKIN_ASSERT_RE = re.compile(r'^I should see (?:text )?"(?P<content>[^"]+)"$', re.IGNORECASE)
+_GHERKIN_ASSERT_TABLE_RE = re.compile(r"^I should see all listed texts$", re.IGNORECASE)
+_GHERKIN_SCREENSHOT_RE = re.compile(r'^I (?:capture|take) (?:a )?screenshot$', re.IGNORECASE)
 
-ActionType = str  # "navigate" | "fill_and_submit" | "fill" | "click" | "assert_visible" | "unknown"
+ActionType = str  # "navigate" | "fill_and_submit" | "fill" | "click" | "assert_visible" | "screenshot" | "unknown"
 
 
 @dataclass
@@ -50,6 +57,7 @@ class Action:
     input_hint: Optional[str] = None
     target_hint: Optional[str] = None
     content_hint: Optional[str] = None
+    content_items: Optional[list[str]] = None
     section_hint: Optional[str] = None
     source: str = "rule"  # "rule" | "llm_fallback"
 
@@ -134,6 +142,52 @@ def interpret_step(raw_text: str) -> Action:
     m = _CLICK_RE.match(text)
     if m:
         return Action(type="click", raw_text=raw_text, target_hint=m.group(1).strip())
+
+    return Action(type="unknown", raw_text=raw_text)
+
+
+def interpret_gherkin_step(
+    keyword_type: str,
+    raw_text: str,
+    data_table: list[list[str]] | None = None,
+) -> Action:
+    """Bind a Gherkin step expression to a supported framework action."""
+    text = raw_text.strip().rstrip(".")
+
+    match = _GHERKIN_NAVIGATE_RE.fullmatch(text)
+    if match:
+        return Action(type="navigate", raw_text=raw_text, url=_normalize_url(match.group("url")))
+
+    match = _GHERKIN_FILL_RE.fullmatch(text)
+    if match:
+        return Action(
+            type="fill",
+            raw_text=raw_text,
+            value=match.group("value"),
+            input_hint=match.group("field"),
+        )
+
+    match = _GHERKIN_CLICK_RE.fullmatch(text)
+    if match:
+        return Action(type="click", raw_text=raw_text, target_hint=match.group("target"))
+
+    match = _GHERKIN_BUTTON_VISIBLE_RE.fullmatch(text)
+    if match:
+        return Action(type="assert_button_visible", raw_text=raw_text, target_hint=match.group("target"))
+
+    match = _GHERKIN_ASSERT_RE.fullmatch(text)
+    if match:
+        return Action(type="assert_visible", raw_text=raw_text, content_hint=f'"{match.group("content")}"')
+
+    if _GHERKIN_ASSERT_TABLE_RE.fullmatch(text) and data_table:
+        header = [cell.strip().lower() for cell in data_table[0]]
+        if len(header) == 1 and header[0] in {"text", "expected text", "value"}:
+            content_items = [row[0].strip() for row in data_table[1:] if len(row) == 1 and row[0].strip()]
+            if content_items:
+                return Action(type="assert_visible", raw_text=raw_text, content_items=content_items)
+
+    if _GHERKIN_SCREENSHOT_RE.fullmatch(text):
+        return Action(type="screenshot", raw_text=raw_text)
 
     return Action(type="unknown", raw_text=raw_text)
 

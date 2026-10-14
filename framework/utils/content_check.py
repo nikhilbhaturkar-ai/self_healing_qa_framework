@@ -47,7 +47,7 @@ def _phrase_pattern(phrase: str) -> str:
 
 async def assert_content_visible(
     page,
-    content_hint: str,
+    content_hint: str | list[str],
     section_hint: str | None = None,
     timeout_ms: int = 15000,
 ) -> dict:
@@ -60,7 +60,7 @@ async def assert_content_visible(
     ("section", "panel", "area"...) that would never appear verbatim on any
     real page, so it is reported for context only and never required.
     """
-    phrases = _quoted_phrases(content_hint)
+    phrases = content_hint if isinstance(content_hint, list) else _quoted_phrases(content_hint)
     if phrases:
         expected = [_phrase_pattern(phrase) for phrase in phrases]
         try:
@@ -89,6 +89,8 @@ async def assert_content_visible(
             "section_hint": section_hint,
         }
 
+    if isinstance(content_hint, list):
+        content_hint = " ".join(content_hint)
     keywords = _keywords(content_hint)
     if not keywords:
         return {"passed": False, "matched": [], "missing": [], "reason": "no keywords extracted"}

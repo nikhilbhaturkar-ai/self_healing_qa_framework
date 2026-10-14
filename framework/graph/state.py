@@ -19,6 +19,7 @@ class GraphState(TypedDict, total=False):
     intent_text: str
 
     initial_success: bool
+    locator_strategy: str
     old_descriptor: str
 
     dom_snapshot: list[dict]

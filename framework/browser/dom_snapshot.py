@@ -27,6 +27,7 @@ _EXTRACT_JS = """
       name: el.getAttribute('name') || null,
       test_id: el.getAttribute('data-testid') || el.getAttribute('data-test-id') || null,
       placeholder: el.getAttribute('placeholder') || null,
+      title: el.getAttribute('title') || null,
       aria_label: el.getAttribute('aria-label') || null,
       class_name: (typeof el.className === 'string') ? el.className.slice(0, 120) : null,
       text: text,

@@ -4,3 +4,4 @@ langchain-core
 chromadb==1.5.9
 groq==1.6.0
 python-dotenv
+gherkin-official

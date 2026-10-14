@@ -45,12 +45,25 @@ class PlaywrightDriver:
         self.page.set_default_navigation_timeout(self.timeout_ms)
 
     async def stop(self) -> None:
-        if self.context:
-            await self.context.close()
-        if self.browser:
-            await self.browser.close()
-        if self._pw:
-            await self._pw.stop()
+        context, browser, playwright = self.context, self.browser, self._pw
+        self.page = None
+        self.context = None
+        self.browser = None
+        self._pw = None
+
+        shutdown_error = None
+        for resource in (context, browser, playwright):
+            if resource is None:
+                continue
+            close = getattr(resource, "close", None) or getattr(resource, "stop", None)
+            if close is None:
+                continue
+            try:
+                await close()
+            except Exception as exc:  # noqa: BLE001 - attempt to close remaining browser resources
+                shutdown_error = shutdown_error or exc
+        if shutdown_error:
+            raise shutdown_error
 
     async def navigate(self, url: str) -> None:
         await self.page.goto(url, wait_until="domcontentloaded")
