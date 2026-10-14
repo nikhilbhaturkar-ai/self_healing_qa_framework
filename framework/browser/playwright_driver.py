@@ -91,6 +91,8 @@ class PlaywrightDriver:
         try:
             if op == "fill":
                 await locator.fill(value or "")
+            elif op == "select_option":
+                await locator.select_option(label=value or "")
             elif op == "click":
                 await locator.click()
             elif op == "assert_contains":

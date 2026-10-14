@@ -58,13 +58,18 @@ Feature: Search
 ```
 
 Bound step expressions are `I navigate to "<url>"`, `I enter "<value>" into
-"<field>"`, `I click "<target>"` (or `I click on "<target>"`), `I should see
+"<field>"`, `I select "<option>" from "<dropdown>" dropdown`, `I click "<target>"`
+(or `I click on "<target>"`), `I should see
 button "<accessible name>"`, `I should see text "<text>"`, and `I take a
 screenshot` / `I capture a screenshot`. The button assertion checks the
 button's accessible name and actual visibility. Gherkin `Background` and `Scenario
 Outline` with `Examples` are supported. Unbound Gherkin steps fail explicitly;
 they are not sent to the LLM classifier. Existing `.txt` scenario files remain
 supported for backward compatibility.
+
+The dropdown-selection step targets a native HTML `<select>` element and
+selects the option by its visible label. Locating the dropdown uses the normal
+locator cache and self-healing flow.
 
 Use a one-column DataTable to check multiple complete visible texts:
 

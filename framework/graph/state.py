@@ -14,7 +14,7 @@ class GraphState(TypedDict, total=False):
     url_pattern: str
     kind: str  # "input" | "clickable"
     hint: str
-    op: str  # "fill" | "click"
+    op: str  # "fill" | "select_option" | "click"
     value: Optional[str]
     intent_text: str
 

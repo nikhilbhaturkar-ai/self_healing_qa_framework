@@ -39,13 +39,17 @@ _ASSERT_RE = re.compile(
 )
 _GHERKIN_NAVIGATE_RE = re.compile(r'^I navigate to "(?P<url>[^"]+)"$', re.IGNORECASE)
 _GHERKIN_FILL_RE = re.compile(r'^I enter "(?P<value>[^"]+)" into "(?P<field>[^"]+)"$', re.IGNORECASE)
+_GHERKIN_SELECT_RE = re.compile(
+    r'^I select "(?P<value>[^"]+)" from "(?P<field>[^"]+)"(?: dropdown)?$',
+    re.IGNORECASE,
+)
 _GHERKIN_CLICK_RE = re.compile(r'^I click(?:\s+on)?\s+"(?P<target>[^"]+)"$', re.IGNORECASE)
 _GHERKIN_BUTTON_VISIBLE_RE = re.compile(r'^I should see button "(?P<target>[^"]+)"$', re.IGNORECASE)
 _GHERKIN_ASSERT_RE = re.compile(r'^I should see (?:text )?"(?P<content>[^"]+)"$', re.IGNORECASE)
 _GHERKIN_ASSERT_TABLE_RE = re.compile(r"^I should see all listed texts$", re.IGNORECASE)
 _GHERKIN_SCREENSHOT_RE = re.compile(r'^I (?:capture|take) (?:a )?screenshot$', re.IGNORECASE)
 
-ActionType = str  # "navigate" | "fill_and_submit" | "fill" | "click" | "assert_visible" | "screenshot" | "unknown"
+ActionType = str  # "navigate" | "fill_and_submit" | "fill" | "select_option" | "click" | "assert_visible" | "screenshot" | "unknown"
 
 
 @dataclass
@@ -167,6 +171,15 @@ def interpret_gherkin_step(
             input_hint=match.group("field"),
         )
 
+    match = _GHERKIN_SELECT_RE.fullmatch(text)
+    if match:
+        return Action(
+            type="select_option",
+            raw_text=raw_text,
+            value=match.group("value"),
+            input_hint=match.group("field"),
+        )
+
     match = _GHERKIN_CLICK_RE.fullmatch(text)
     if match:
         return Action(type="click", raw_text=raw_text, target_hint=match.group("target"))
@@ -199,7 +212,7 @@ class ElementAction:
     (e.g. fill_and_submit -> fill the input, then click submit)."""
 
     kind: str  # "input" | "clickable"
-    op: str  # "fill" | "click"
+    op: str  # "fill" | "select_option" | "click"
     hint: str
     value: Optional[str] = None
 
@@ -212,6 +225,8 @@ def expand_to_element_actions(action: Action) -> list[ElementAction]:
         ]
     if action.type == "fill":
         return [ElementAction(kind="input", op="fill", hint=action.input_hint or "input", value=action.value)]
+    if action.type == "select_option":
+        return [ElementAction(kind="input", op="select_option", hint=action.input_hint or "dropdown", value=action.value)]
     if action.type == "click":
         return [ElementAction(kind="clickable", op="click", hint=action.target_hint or "")]
     return []
