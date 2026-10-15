@@ -115,6 +115,50 @@ class AuditHooks(StepHooks):
 runner = ScenarioRunner(SETTINGS, hooks=AuditHooks())
 ```
 
+## RAG Scenario Generation
+
+The scenario generator indexes this framework's implemented Gherkin bindings
+and existing `.feature` scenarios, retrieves them with Chroma semantic search
+plus lexical ranking, and asks Groq to compose a candidate using only retrieved
+evidence. Generated steps are parsed and matched against the same regex
+bindings used by the runner. Missing, ambiguous, or invalid steps are reported;
+they are not silently treated as executable. Generation does not run the
+feature. Review its reports and perform any project dry-run before use.
+
+Index or refresh the current repository after changing bindings or feature
+examples:
+
+```powershell
+.venv\Scripts\python -m framework.scenario_generation.cli index --repo .
+```
+
+Generate a candidate and its JSON/Markdown reports under
+`artifacts/cucumber_rag/`:
+
+```powershell
+.venv\Scripts\python -m framework.scenario_generation.cli generate `
+   --repo . `
+   --requirement "Verify an administrator can open the dashboard and sign out" `
+   --application APX `
+   --module Administration `
+   --output-name admin_dashboard
+```
+
+An optional local REST API exposes `GET /health`, `POST /index`, and
+`POST /generate`:
+
+```powershell
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m uvicorn framework.scenario_generation.api:app --port 8000
+```
+
+The API only accepts repositories under `SCENARIO_GENERATOR_ALLOWED_ROOT`,
+which defaults to the workspace root. Add authentication and request limits
+before exposing it beyond a trusted local environment. The current scanner
+indexes the Python Gherkin bindings in this framework plus repository feature
+examples; it does not parse external JavaScript/TypeScript step-definition
+registries.
+
 ## Running
 
 ```powershell

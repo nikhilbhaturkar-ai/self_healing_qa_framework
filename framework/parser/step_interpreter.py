@@ -15,6 +15,8 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from hashlib import sha256
+from pathlib import Path
 from typing import Optional
 
 _NAVIGATE_RE = re.compile(r"^(?:navigate|go)\s+to\s+(.+)$", re.IGNORECASE)
@@ -48,6 +50,61 @@ _GHERKIN_BUTTON_VISIBLE_RE = re.compile(r'^I should see button "(?P<target>[^"]+
 _GHERKIN_ASSERT_RE = re.compile(r'^I should see (?:text )?"(?P<content>[^"]+)"$', re.IGNORECASE)
 _GHERKIN_ASSERT_TABLE_RE = re.compile(r"^I should see all listed texts$", re.IGNORECASE)
 _GHERKIN_SCREENSHOT_RE = re.compile(r'^I (?:capture|take) (?:a )?screenshot$', re.IGNORECASE)
+
+_GHERKIN_BINDINGS = [
+    ("navigate", "_GHERKIN_NAVIGATE_RE", _GHERKIN_NAVIGATE_RE, 'I navigate to "{string}"', "navigate", False),
+    ("fill", "_GHERKIN_FILL_RE", _GHERKIN_FILL_RE, 'I enter "{string}" into "{string}"', "fill", False),
+    ("select", "_GHERKIN_SELECT_RE", _GHERKIN_SELECT_RE, 'I select "{string}" from "{string}" dropdown', "select_option", False),
+    ("click", "_GHERKIN_CLICK_RE", _GHERKIN_CLICK_RE, 'I click [on] "{string}"', "click", False),
+    ("button_visible", "_GHERKIN_BUTTON_VISIBLE_RE", _GHERKIN_BUTTON_VISIBLE_RE, 'I should see button "{string}"', "assert_button_visible", False),
+    ("text_visible", "_GHERKIN_ASSERT_RE", _GHERKIN_ASSERT_RE, 'I should see [text] "{string}"', "assert_visible", False),
+    ("texts_table", "_GHERKIN_ASSERT_TABLE_RE", _GHERKIN_ASSERT_TABLE_RE, "I should see all listed texts", "assert_visible", True),
+    ("screenshot", "_GHERKIN_SCREENSHOT_RE", _GHERKIN_SCREENSHOT_RE, "I [capture|take] [a] screenshot", "screenshot", False),
+]
+
+
+def registered_gherkin_steps() -> list[dict]:
+    """Return the runtime binding catalog with stable IDs and source references."""
+    source_path = Path(__file__).resolve()
+    source_lines = source_path.read_text(encoding="utf-8").splitlines()
+    records = []
+    for binding_id, declaration, pattern, expression, action_type, requires_table in _GHERKIN_BINDINGS:
+        source_line = next(
+            (line_number for line_number, line in enumerate(source_lines, 1) if line.startswith(declaration + " =")),
+            None,
+        )
+        stable_id = sha256(f"{source_path.as_posix()}|{binding_id}|{expression}".encode("utf-8")).hexdigest()
+        records.append(
+            {
+                "id": stable_id,
+                "binding_id": binding_id,
+                "expression": expression,
+                "expression_type": "python_regex",
+                "action_type": action_type,
+                "requires_data_table": requires_table,
+                "source_file": source_path.as_posix(),
+                "source_line": source_line,
+                "status": "implemented",
+            }
+        )
+    return records
+
+
+def match_gherkin_step_definitions(raw_text: str, data_table: list[list[str]] | None = None) -> list[dict]:
+    """Match using the exact regex semantics used by interpret_gherkin_step."""
+    text = raw_text.strip().rstrip(".")
+    records = {record["binding_id"]: record for record in registered_gherkin_steps()}
+    matches = []
+    for binding_id, _, pattern, _, _, requires_table in _GHERKIN_BINDINGS:
+        table_is_valid = bool(
+            data_table
+            and len(data_table[0]) == 1
+            and data_table[0][0].strip().casefold() in {"text", "expected text", "value"}
+            and any(len(row) == 1 and row[0].strip() for row in data_table[1:])
+        )
+        if pattern.fullmatch(text) and (not requires_table or table_is_valid):
+            matches.append(records[binding_id])
+    return matches
 
 ActionType = str  # "navigate" | "fill_and_submit" | "fill" | "select_option" | "click" | "assert_visible" | "screenshot" | "unknown"
 

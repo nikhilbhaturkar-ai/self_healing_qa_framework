@@ -4,4 +4,7 @@ langchain-core
 chromadb==1.5.9
 groq==1.6.0
 python-dotenv
-gherkin-official
+gherkin-official==42.0.1
+fastapi>=0.115,<1
+uvicorn>=0.27,<1
+httpx>=0.25,<1

@@ -1,0 +1,36 @@
+{
+  "requirement": "Verify that a user can navigate to the APX OPS dashboard, sign in with admin credentials, and see the Basis Monitoring tiles",
+  "application": "apx_ops",
+  "module": "dashboard",
+  "role": null,
+  "tags": [],
+  "repository_revision": "429f2c381501d1f92e8e3d5d7e7f70077cbe30ca",
+  "feature_path": "artifacts/cucumber_rag/generated_20261014_163118.feature",
+  "executable_candidate": false,
+  "validation": {
+    "syntax_valid": true,
+    "reused_steps": [],
+    "missing_steps": [],
+    "ambiguous_steps": [],
+    "validation_errors": [],
+    "scenario_count": 0,
+    "step_count": 0,
+    "dry_run_status": "not_run",
+    "execution_status": "not_run"
+  },
+  "assumptions": [],
+  "rationale": "Generation stopped because no indexed bindings matched the requirement and scope.",
+  "selected_step_ids": [],
+  "model_reported_missing_steps": [
+    {
+      "reason": "No registered steps were retrieved."
+    }
+  ],
+  "retrieved_steps": [],
+  "retrieved_scenario_examples": [],
+  "artifact_paths": {
+    "json_report": "E:\\Projects\\self_healing_qa_framework\\artifacts\\cucumber_rag\\generated_20261014_163118.json",
+    "markdown_report": "E:\\Projects\\self_healing_qa_framework\\artifacts\\cucumber_rag\\generated_20261014_163118.md",
+    "feature": "E:\\Projects\\self_healing_qa_framework\\artifacts\\cucumber_rag\\generated_20261014_163118.feature"
+  }
+}
