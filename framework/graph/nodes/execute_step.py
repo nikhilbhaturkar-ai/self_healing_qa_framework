@@ -6,6 +6,7 @@ locators. Only on failure does the graph route into self-healing.
 from __future__ import annotations
 
 from framework.browser.locator_strategies import Candidate, build_locator
+from framework.custom_locators import resolve_custom_locator
 from framework.graph.context import NodeContext
 from framework.graph.state import GraphState
 
@@ -14,6 +15,21 @@ def make_execute_step(ctx: NodeContext):
     async def execute_step(state: GraphState) -> dict:
         url_pattern, kind, hint = state["url_pattern"], state["kind"], state["hint"]
         op, value = state["op"], state.get("value")
+
+        custom_configured, custom_locator = await resolve_custom_locator(
+            ctx.driver.page, op, hint
+        )
+        if custom_configured:
+            success = (
+                custom_locator is not None
+                and await ctx.driver.act(custom_locator, op, value)
+            )
+            return {
+                "initial_success": success,
+                "final_success": success,
+                "locator_strategy": "custom_json",
+                "custom_locator_configured": True,
+            }
 
         cached = ctx.store.lookup(url_pattern, kind, hint, n_results=1)
         if cached and cached[0]["similarity"] >= 0.85 and cached[0].get("selector"):

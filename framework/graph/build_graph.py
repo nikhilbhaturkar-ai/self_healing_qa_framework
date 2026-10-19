@@ -36,7 +36,7 @@ def build_healing_graph(ctx: NodeContext):
     graph.add_edge(START, "execute_step")
     graph.add_conditional_edges(
         "execute_step",
-        lambda s: "done" if s.get("initial_success") else "heal",
+        lambda s: "done" if s.get("initial_success") or s.get("custom_locator_configured") else "heal",
         {"done": END, "heal": "capture_context"},
     )
     graph.add_edge("capture_context", "context_understanding")

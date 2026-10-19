@@ -20,6 +20,7 @@ class GraphState(TypedDict, total=False):
 
     initial_success: bool
     locator_strategy: str
+    custom_locator_configured: bool
     old_descriptor: str
 
     dom_snapshot: list[dict]

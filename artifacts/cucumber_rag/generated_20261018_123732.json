@@ -1,0 +1,207 @@
+{
+  "requirement": "verify if user is able to login to apx dashboard using nikhil",
+  "application": null,
+  "module": null,
+  "role": null,
+  "tags": [],
+  "repository_revision": "2e05e61d7a497a8dfe6c82c3fa227552a3cc28ff",
+  "feature_path": "artifacts/cucumber_rag/generated_20261018_123732.feature",
+  "executable_candidate": false,
+  "validation": {
+    "syntax_valid": true,
+    "reused_steps": [
+      {
+        "text": "I navigate to \"http://apxtechnology.in:3000/\"",
+        "keyword_type": "Context",
+        "scenario": "User nikhil logs into APX dashboard",
+        "expression": "I navigate to \"{string}\"",
+        "binding_id": "ed171e94e504a96f0565d91b739d0f1f7de3ecab8bbe431a326141ff646e0196",
+        "source_file": "E:/Projects/self_healing_qa_framework/framework/parser/step_interpreter.py",
+        "source_line": 42
+      },
+      {
+        "text": "I enter \"nikhil\" into \"User Id\"",
+        "keyword_type": "Context",
+        "scenario": "User nikhil logs into APX dashboard",
+        "expression": "I enter \"{string}\" into \"{string}\"",
+        "binding_id": "77ebc612e6d6ede3f8e5c3b203b554a9147cab16d84a79e421e1f8a204548e42",
+        "source_file": "E:/Projects/self_healing_qa_framework/framework/parser/step_interpreter.py",
+        "source_line": 43
+      },
+      {
+        "text": "I enter \"password123\" into \"password\"",
+        "keyword_type": "Context",
+        "scenario": "User nikhil logs into APX dashboard",
+        "expression": "I enter \"{string}\" into \"{string}\"",
+        "binding_id": "77ebc612e6d6ede3f8e5c3b203b554a9147cab16d84a79e421e1f8a204548e42",
+        "source_file": "E:/Projects/self_healing_qa_framework/framework/parser/step_interpreter.py",
+        "source_line": 43
+      },
+      {
+        "text": "I click \"Sign in to Dashboard\"",
+        "keyword_type": "Context",
+        "scenario": "User nikhil logs into APX dashboard",
+        "expression": "I click [on] \"{string}\"",
+        "binding_id": "2a94bbdb4e933926d7b9ee1d2252b6d719f0ba19d93bd5f6ae6726da61f8aa4a",
+        "source_file": "E:/Projects/self_healing_qa_framework/framework/parser/step_interpreter.py",
+        "source_line": 48
+      },
+      {
+        "text": "I should see all listed texts",
+        "keyword_type": "Outcome",
+        "scenario": "User nikhil logs into APX dashboard",
+        "expression": "I should see all listed texts",
+        "binding_id": "5a8308bd03a4314c517b78f8ffd91b8bb94930d75388b108e7d71aa69f5e42d5",
+        "source_file": "E:/Projects/self_healing_qa_framework/framework/parser/step_interpreter.py",
+        "source_line": 51
+      }
+    ],
+    "missing_steps": [
+      {
+        "text": "I should see [text] \"ApxOps - SAP Monitoring Platform\"",
+        "keyword_type": "Outcome",
+        "scenario": "User nikhil logs into APX dashboard"
+      }
+    ],
+    "ambiguous_steps": [],
+    "validation_errors": [],
+    "scenario_count": 1,
+    "step_count": 6,
+    "dry_run_status": "not_run",
+    "execution_status": "not_run"
+  },
+  "assumptions": [
+    "The step \"I should see [text] \"{string}\"\" is used to assert the presence of the dashboard title. The data table for \"I should see all listed texts\" is provided with a placeholder text as the framework requires at least one row."
+  ],
+  "rationale": "All actions required by the requirement are expressed using registered step expressions. The only step that requires a data table is \"I should see all listed texts\", which has been supplied with a minimal table to satisfy the resolver. No additional steps are missing.",
+  "selected_step_ids": [
+    "ed171e94e504a96f0565d91b739d0f1f7de3ecab8bbe431a326141ff646e0196",
+    "77ebc612e6d6ede3f8e5c3b203b554a9147cab16d84a79e421e1f8a204548e42",
+    "77ebc612e6d6ede3f8e5c3b203b554a9147cab16d84a79e421e1f8a204548e42",
+    "2a94bbdb4e933926d7b9ee1d2252b6d719f0ba19d93bd5f6ae6726da61f8aa4a",
+    "dfc1b4c84736f76819b27f857517b1e08ef3b3246c1ba6e31a7e2d0f39619671",
+    "5a8308bd03a4314c517b78f8ffd91b8bb94930d75388b108e7d71aa69f5e42d5"
+  ],
+  "model_reported_missing_steps": [],
+  "retrieved_steps": [
+    {
+      "id": "ed171e94e504a96f0565d91b739d0f1f7de3ecab8bbe431a326141ff646e0196",
+      "expression": "I navigate to \"{string}\"",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 42,
+      "semantic_distance": 2.0247859954833984,
+      "lexical_score": 1.6155208329105415,
+      "hybrid_score": 0.032266458495966696
+    },
+    {
+      "id": "8cbfd1dea349791376d1c995d56df559f0db48857c3088e46b3c9fc6e59ee5fd",
+      "expression": "I [capture|take] [a] screenshot",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 52,
+      "semantic_distance": 1.8961118459701538,
+      "lexical_score": null,
+      "hybrid_score": 0.01639344262295082
+    },
+    {
+      "id": "5a8308bd03a4314c517b78f8ffd91b8bb94930d75388b108e7d71aa69f5e42d5",
+      "expression": "I should see all listed texts",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 51,
+      "semantic_distance": 1.9044651985168457,
+      "lexical_score": null,
+      "hybrid_score": 0.016129032258064516
+    },
+    {
+      "id": "36ea1960e672c87385e02a68a9e721358a401041b516042aafd691505de88139",
+      "expression": "I should see button \"{string}\"",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 49,
+      "semantic_distance": 2.0489466190338135,
+      "lexical_score": null,
+      "hybrid_score": 0.015625
+    },
+    {
+      "id": "dfc1b4c84736f76819b27f857517b1e08ef3b3246c1ba6e31a7e2d0f39619671",
+      "expression": "I should see [text] \"{string}\"",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 50,
+      "semantic_distance": 2.052248001098633,
+      "lexical_score": null,
+      "hybrid_score": 0.015384615384615385
+    },
+    {
+      "id": "2a94bbdb4e933926d7b9ee1d2252b6d719f0ba19d93bd5f6ae6726da61f8aa4a",
+      "expression": "I click [on] \"{string}\"",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 48,
+      "semantic_distance": 2.079695224761963,
+      "lexical_score": null,
+      "hybrid_score": 0.015151515151515152
+    },
+    {
+      "id": "77ebc612e6d6ede3f8e5c3b203b554a9147cab16d84a79e421e1f8a204548e42",
+      "expression": "I enter \"{string}\" into \"{string}\"",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 43,
+      "semantic_distance": 2.132190465927124,
+      "lexical_score": null,
+      "hybrid_score": 0.014925373134328358
+    },
+    {
+      "id": "3860a3ddda6523459b8d76fd111880fed0762da3beb93a08201cbb491628e096",
+      "expression": "I select \"{string}\" from \"{string}\" dropdown",
+      "source_file": "framework/parser/step_interpreter.py",
+      "source_line": 44,
+      "semantic_distance": 2.2363104820251465,
+      "lexical_score": null,
+      "hybrid_score": 0.014705882352941176
+    }
+  ],
+  "retrieved_scenario_examples": [
+    {
+      "id": "scenarios/apx_ops_admin.feature::8",
+      "feature": "APX OPS dashboard administration",
+      "scenario": "Administrator can sign in and sign out",
+      "source_file": "scenarios/apx_ops_admin.feature",
+      "source_line": 11,
+      "hybrid_score": 0.03278688524590164
+    },
+    {
+      "id": "scenarios/apx_ops_basis.feature::66",
+      "feature": "APX OPS dashboard administration",
+      "scenario": "Administrator can sign in and sign out",
+      "source_file": "scenarios/apx_ops_basis.feature",
+      "source_line": 11,
+      "hybrid_score": 0.03225806451612903
+    },
+    {
+      "id": "scenarios/apx_ops_admin.feature::28",
+      "feature": "APX OPS dashboard administration",
+      "scenario": "Basis Monitoring tiles are displayed",
+      "source_file": "scenarios/apx_ops_admin.feature",
+      "source_line": 32,
+      "hybrid_score": 0.031746031746031744
+    },
+    {
+      "id": "scenarios/apx_ops_basis.feature::86",
+      "feature": "APX OPS dashboard administration",
+      "scenario": "Basis Monitoring tiles are displayed",
+      "source_file": "scenarios/apx_ops_basis.feature",
+      "source_line": 32,
+      "hybrid_score": 0.03125
+    },
+    {
+      "id": "scenarios/apx_ops_admin.feature::18",
+      "feature": "APX OPS dashboard administration",
+      "scenario": "Dashboard controls are available",
+      "source_file": "scenarios/apx_ops_admin.feature",
+      "source_line": 16,
+      "hybrid_score": 0.03076923076923077
+    }
+  ],
+  "artifact_paths": {
+    "json_report": "E:\\Projects\\self_healing_qa_framework\\artifacts\\cucumber_rag\\generated_20261018_123732.json",
+    "markdown_report": "E:\\Projects\\self_healing_qa_framework\\artifacts\\cucumber_rag\\generated_20261018_123732.md",
+    "feature": "E:\\Projects\\self_healing_qa_framework\\artifacts\\cucumber_rag\\generated_20261018_123732.feature"
+  }
+}

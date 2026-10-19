@@ -71,6 +71,37 @@ The dropdown-selection step targets a native HTML `<select>` element and
 selects the option by its visible label. Locating the dropdown uses the normal
 locator cache and self-healing flow.
 
+For a feature target that needs a fixed selector, add an entry to the
+repository-root `custom_locators.json`. Keys are operation names (`fill`,
+`click`, or `select_option`) and target hints from the feature step. A matching
+entry is used before locator memory and automatic resolution, so it does not
+invoke LLM locator ranking. Custom selectors must match exactly one element;
+otherwise that step fails instead of falling back to automatic healing.
+
+```json
+{
+   "fill": {
+      "username": {
+         "by": "css",
+         "value": "input[name='username']"
+      }
+   },
+   "click": {
+      "Admin Login": {
+         "by": "test_id",
+         "value": "admin-login"
+      }
+   }
+}
+```
+
+Supported `by` values are `css`, `xpath`, `text`, `label`, `placeholder`,
+`test_id`, and `role`. For `role`, set `value` to the role name and optionally
+set `name` to the accessible name. Target matching ignores surrounding
+whitespace and letter case; the operation and target must otherwise match the
+feature step, such as `When I enter "admin" into "username"` or
+`And I click "Admin Login"`.
+
 Use a one-column DataTable to check multiple complete visible texts:
 
 ```
@@ -184,3 +215,9 @@ scenario hooks complete and relaunched before the next scenario begins.
 - A previously healed locator is cached in Chroma and reused directly on
   future runs with zero heuristics/LLM cost.
 - The HTML/JSON report surfaces `llm_calls_made` so token spend is visible.
+
+# How to Run scenario
+.\.venv-1\Scripts\python.exe run.py scenarios\apx_ops_admin_portal.feature --headed
+
+# How to generate cucumber feature file and steps from scenario 
+python run_rag.py generate "verify if user is able to login to apx dashboard using basis admin"

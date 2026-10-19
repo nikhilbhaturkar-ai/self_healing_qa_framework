@@ -256,7 +256,10 @@ class ScenarioRunner:
                             "kind": ea.kind,
                             "hint": ea.hint,
                             "strategy": result_state.get("locator_strategy", "playwright_semantic"),
-                            "selection_method": "cached locator" if result_state.get("locator_strategy") == "chroma_cache" else "Playwright semantic locator",
+                            "selection_method": {
+                                "chroma_cache": "cached locator",
+                                "custom_json": "JSON custom locator",
+                            }.get(result_state.get("locator_strategy"), "Playwright semantic locator"),
                             "applied_success": True,
                         }
                     )
